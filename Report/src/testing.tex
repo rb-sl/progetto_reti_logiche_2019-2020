@@ -1,0 +1,54 @@
+% Sezione per il testing
+
+\section{Testing}
+Per valutare la correttezza del componente sviluppato rispetto alle specifiche si \`e fatto uso di alcune serie di test di cui sono riportati alcuni esempi nella tabella a fine sezione. Il tempo \`e considerato da quando viene rilevata l'attivazione del segnale \texttt{i\_start} a quando viene attivato \texttt{o\_done} (In pratica il tempo impiegato per tornare a S0, valutato come numero di cicli di clock necessari).  
+
+\subsection{Casi normali}
+I tipi di test per questo tipo di esecuzione hanno seguito le modalit\`a dei testbench forniti (Esempi BT1 e BT2), valutando quindi sia casi di appartenenza a WZ sia casi negativi. I test effettuati hanno dato riscontri corretti sia in presintesi sia in postsintesi.
+
+\subsubsection{Casi limite}
+Per valutare il corretto funzionamento anche in casi limite sono stati realizzati testbench (Esempi BT3 e BT4) per cui l'indirizzo:
+\begin{itemize}
+	\item Appartenesse a WZ0 (Caso iniziale, con pipeline a regime);
+	\item Appartenesse a WZ7 (Caso finale, nell'ultimo stato di analisi);
+\end{itemize}
+Per quanto riguarda invece le WZ, negli stessi esempi si sono testati casi di indirizzi base fuori ordine e al limite dei valori validi.
+Tutti questi tipi di test sono stati eseguiti correttamente anche in postsintesi.
+
+\subsection{Casi eccezionali}
+Sono stati effettuati anche test in casi di esecuzione non normale per valutare la consistenza di comportamento del sistema.
+
+\subsubsection{Esecuzioni con restart}
+Sono stati effettuati test aggiungendo dei reset asincroni all'esecuzione dei benchtest gi\`a illustrati; prima dell'istruzione di \texttt{wait} per \texttt{tb\_done} \`e stato quindi inserito il seguente codice (con tempo di attesa variabile):
+\begin{verbatim}
+wait for 500 ns;
+wait for c_CLOCK_PERIOD;
+tb_rst <= '1';
+wait for c_CLOCK_PERIOD;
+tb_rst <= '0';
+wait for c_CLOCK_PERIOD;
+tb_start <= '1';
+wait for c_CLOCK_PERIOD;
+\end{verbatim}
+\`E stata testata anche la possibilit\`a di esecuzioni multiple sequenziali senza reset ma con cambio di valori tra la terminazione del primo e lo start del secondo.
+
+Dopo il restart i test sono stati completati correttamente, sia in presintesi sia in postsintesi. 
+
+\subsubsection{Valori non validi}
+Sono anche stati effettuatia alcuni test con valori non validi, al fine di controllare che le ipotesi effettuate in sezione \ref{eccezione} fossero corrette. Un esempio \`e mostrato dai test BT5 e BT6.
+
+\subsection{Modifica del tempo di clock}
+Come ultimi test sono stati diminuiti i tempi di clock delle simulazioni secondo quanto riportato nel report di sintesi. La simulazione postsintesi functional si comporta correttamente per i tempi di clock ipotizzati nel report di timing.
+
+\begin{center}
+	\begin{tabular}[width=\textwidth]{c|c c c c c c c c c|c|c}
+		Test & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & Risultato & Nclock \\
+		\hline
+		BT1 & 4 & 13 & 22 & 31 & 37 & 45 & 77 & 91 & 33 & 180 (1 011 0100) & 9 \\
+		BT2 & 4 & 13 & 22 & 31 & 37 & 45 & 77 & 91 & 42 & 42 (0 00101010) & 12 \\
+		BT3 & 126 & 13 & 22 & 31 & 37 & 45 & 77 & 0 & 127 & 130 (1 000 0010) & 6 \\ 
+		BT4 & 1 & 13 & 22 & 31 & 37 & 45 & 77 & 0 & 0 & 241 (1 111 0001) & 12 \\
+		BT5 & 4 & 13 & 22 & 31 & 37 & 45 & 77 & 91 & 255 & 127 (0 1111111) & 12 \\ 
+		BT6 & 4 & 13 & 22 & 31 & 37 & 45 & 77 & 254 & 255 & 226 (1 111 0010) & 12
+	\end{tabular}
+\end{center}

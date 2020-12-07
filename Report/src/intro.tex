@@ -1,0 +1,36 @@
+% Analisi dei requisiti
+
+\section{Introduzione}
+
+Scopo della Prova Finale di Reti Logiche \`e implementare un encoder per Working Zones come descritto dalla specifica fornita. Per la realizzazione del progetto \`e stata utilizzata la fpga xc7a200tfbg484-1 nell'editor di Vivado Webpack 2019; la documentazione utilizzata per la realizzazione del progetto consiste nelle guide base di Vivado e di VHDL fornite dai docenti.
+
+\subsection{Scelte progettuali}
+
+Secondo la specifica definita, per la realizzazione del progetto sono stati utilizzati due registri per mantenere l'indirizzo da codificare e l'indirizzo della Working Zone analizzata al momento. Inoltre, si \`e deciso di mantenere un registro contatore per le operazioni effettuate, usato anche per comandare gli indirizzi cui accedere; in questo modo la gestione dell'accesso alla memoria \`e stato delegato al data path invece che alla macchina a stati finiti.
+
+In base alle richieste sono anche state effettuate le seguenti scelte:
+\begin{itemize}	
+	\item Poich\'e non viene dichiarato che le WZ si trovino sempre in un ordine definito il circuito analizzer\`a tutti gli indirizzi prima di giungere alla conclusione di non appartenenza a nessuna WZ dell'indirizzo.
+	
+	\label{eccezione}\item Per quanto riguarda i valori non validi, il circuito dovr\`a considerare gli indirizzi di input come interi unsigned, quindi non sar\`a possibile inserire valori al di sotto di quelli considerati validi; se viene inserito un valore da codificare superiore a 127 il comportamento non dovr\`a differire da un'esecuzione normale, ma in caso di indirizzo non presente nelle WZ il MSB verr\`a sovrascritto dal WZ\_BIT, mantenendo quindi un comportamento consistente anche in casi eccezionali.
+\end{itemize}
+
+\subsection{Ottimizzazione con pipeline}
+
+Per sfruttare al meglio la capacit\`a di parallelizzazione dell'hardware si \`e optato per una soluzione con una pipeline, cosicch\'e i moduli di gestione indirizzi, input e analisi (illustrati in seguito) potessero lavorare in contemporanea, riducendo notevolmente il tempo di esecuzione. A causa di questa scelta \`e stato per\`o necessario utilizzare un registro contatore per gestire l'offset tra i moduli.
+
+Un esempio di esecuzione delle tre componenti in parallelo \`e mostrato in Figura \ref{pipeline}: una volta iniziata l'esecuzione il circuito richiede alla memoria prima l'indirizzo da codificare, quindi l'indirizzo della prima Working Zone. Da questo punto inizia l'esecuzione parallela a pieno regime, per cui avvengono contemporaneamente:
+\begin{itemize}
+	\item Analisi dell'appartenenza a una WZ;
+	\item Caricamento della WZ successiva (se esiste);
+	\item Richiesta di quella dopo ancora (se esiste).
+\end{itemize}
+Se l'analisi di appartenenza \`e positiva il sistema viene congelato e si procede all'output, altrimenti questo avviene una volta terminata l'analisi dell'ultima Working Zone.
+
+\begin{figure}[t]
+	\centering
+	{\includegraphics[width=\textwidth,keepaspectratio]
+		{pipeline.eps}}
+	\caption{Esempio di funzionamento della pipeline per caricamento e analisi}
+	\label{pipeline} 
+\end{figure}

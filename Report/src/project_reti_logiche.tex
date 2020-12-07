@@ -1,0 +1,45 @@
+%!TEX encoding = UTF-8 Unicode 
+%!TEX TS-program = pdflatex
+
+\documentclass[a4paper,12pt,italian]{article} 
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}
+\usepackage{indentfirst}
+\usepackage{hyperref}
+\usepackage{upquote}
+
+\usepackage{pdflscape}
+\usepackage{tikz}
+
+\usepackage{graphicx} 
+
+\graphicspath{{./images/}}
+
+\pagestyle{plain} 
+\author{------  ----- \\
+	-------- -- -----} 
+\date{Politecnico di Milano \\
+	Scuola di Ingegneria Industriale e dell'Informazione \\
+	Corso di Ingegneria Informatica \\
+	Sezione Prof. Fornaciari \\
+	A.A. 2019/2020}
+\title{Prova finale -- Progetto di reti logiche}
+
+\begin{document}	
+	\maketitle
+	\newpage
+	\tableofcontents
+	\newpage
+	
+	\include{intro}
+	
+	\include{arch}
+	
+	\include{sintesi}
+	
+	\include{testing}
+	
+	\include{conclusioni}
+\end{document}
