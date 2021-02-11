@@ -1,4 +1,4 @@
-# Prova finale di Algoritmi e strutture dati
+# Prova finale di Reti Logiche
 ## Politecnico di Milano
 ### A.A. 2019/2020
 
